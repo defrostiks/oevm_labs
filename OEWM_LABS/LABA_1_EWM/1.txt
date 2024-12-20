@@ -1,0 +1,146 @@
+#include <iostream>
+#include <bitset>
+#include <limits>
+#include <vector>
+#include <sstream>
+#include <string>
+
+using namespace std;
+
+template<typename T>
+void displayBinaryRepresentation(T value) {
+    const int bits = sizeof(T) * 8;
+    bitset<bits> b(*reinterpret_cast<unsigned long long*>(&value));
+    cout << "Двоичное представление: " << b << endl;
+}
+
+template<typename T>
+T invertBits(T value, const vector<int>& positions) {
+    const int bits = sizeof(T) * 8;
+    bitset<bits> b(*reinterpret_cast<unsigned long long*>(&value));
+
+    for (int pos : positions) {
+        if (pos >= 0 && pos < bits) {
+            b.flip(pos);
+        }
+    }
+
+    return *reinterpret_cast<T*>(&b);
+}
+
+template<typename T>
+bool getInput(T& value) {
+    cin >> value;
+    if (cin.fail()) {
+        cin.clear(); // Сброс флага ошибки
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка входного буфера
+        return false; // Ошибка ввода
+    }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка оставшегося ввода
+    return true; // Успешный ввод
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    while (true) {
+        cout << "Выберите тип данных (c для char, d для double, q для выхода): ";
+        char choice;
+        cin >> choice;
+
+        if (choice == 'q' || choice == 'Q') {
+            break; // Выход из программы
+        }
+
+        if (choice == 'c' || choice == 'C') {
+            char value;
+            cout << "Введите значение типа char: ";
+            if (!getInput(value)) {
+                cout << "Ошибка: неверный ввод. Пожалуйста, введите один символ." << endl;
+                continue;
+            }
+
+            displayBinaryRepresentation(value);
+
+            const int max_bits = sizeof(char) * 8;
+            int num_bits;
+            cout << "Введите количество бит для инверсии (максимум " << max_bits << "): ";
+            if (!getInput(num_bits) || num_bits < 1 || num_bits > max_bits) {
+                cout << "Ошибка: количество бит должно быть от 1 до " << max_bits << "." << endl;
+                continue;
+            }
+
+            vector<int> positions;
+            cout << "Введите позиции бит для инверсии (через запятую, например, 0,1,2): ";
+            string input;
+            getline(cin, input);
+            stringstream ss(input);
+            int pos;
+            while (ss >> pos) {
+                positions.push_back(pos);
+                if (ss.peek() == ',') {
+                    ss.ignore();
+                }
+            }
+
+            if (positions.size() != num_bits) {
+                cout << "Ошибка: количество позиций для инверсии должно соответствовать введенному количеству бит." << endl;
+                continue;
+            }
+
+            char inverted_value = invertBits(value, positions);
+            cout << "Инвертированное значение в двоичном виде: ";
+            displayBinaryRepresentation(inverted_value);
+            cout << "Инвертированное значение: " << inverted_value << endl;
+
+        }
+        else if (choice == 'd' || choice == 'D') {
+            double value;
+            cout << "Введите значение типа double: ";
+            if (!getInput(value)) {
+                cout << "Ошибка: неверный ввод. Пожалуйста, введите число." << endl;
+                continue;
+            }
+
+            displayBinaryRepresentation(value);
+
+            const int max_bits = sizeof(double) * 8;
+            int num_bits;
+            cout << "Введите количество бит для инверсии (максимум " << max_bits << "): ";
+            if (!getInput(num_bits) || num_bits < 1 || num_bits > max_bits) {
+                cout << "Ошибка: количество бит должно быть от 1 до " << max_bits << "." << endl;
+                continue;
+            }
+
+            vector<int> positions;
+            cout << "Введите позиции бит для инверсии (через запятую, например, 0,1,2): ";
+            string input;
+            getline(cin, input);
+            stringstream ss(input);
+            int pos;
+            while (ss >> pos) {
+                positions.push_back(pos);
+                if (ss.peek() == ',') {
+                    ss.ignore();
+                }
+            }
+
+            if (positions.size() != num_bits) {
+                cout << "Ошибка: количество позиций для инверсии должно соответствовать введенному количеству бит." << endl;
+                continue;
+            }
+
+            double inverted_value = invertBits(value, positions);
+            cout << "Инвертированное значение в двоичном виде: ";
+            displayBinaryRepresentation(inverted_value);
+            cout << "Инвертированное значение: " << inverted_value << endl;
+
+        }
+        else {
+            cout << "Неверный выбор. Пожалуйста, выберите c для char, d для double или q для выхода." << endl;
+        }
+
+        cout << endl;
+    }
+
+    return 0;
+}
